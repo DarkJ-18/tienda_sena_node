@@ -1,5 +1,15 @@
 ### CHANGELOG
 
+## [v1.0.2-alpha.1] - 25-03-2025
+
+### Added
+
+- Se agrega el esquema de `Usuarios`, `Pedidos`, `Productos`.
+- Se agrega el controlador de `Usuarios`, `Pedidos`, `Productos`.
+- Se agrega el modelo de `Usuarios`, `Pedidos`, `Productos`.
+
+---
+
 ## [v1.0.1-alpha.1] - 25-03-2025
 
 ### Added
