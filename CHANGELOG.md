@@ -1,5 +1,15 @@
 ### CHANGELOG
 
+## [v1.1.2-alpha.1] - 25-03-2025
+
+### Added
+
+- Se agrega Bootstrap.
+- Se agrega el index.ejs
+- Se agrega el navbar
+
+---
+
 ## [v1.0.2-alpha.1] - 25-03-2025
 
 ### Added
