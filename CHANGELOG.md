@@ -1,5 +1,14 @@
 ### CHANGELOG
 
+---
+
+## [v1.2.2-alpha.1] - 25-03-2025
+
+### Added
+
+- Se agregan las carpetas `public`, `views` y `assets`.
+- Se agrega los archivos necesarios para el proyecto.
+
 ## [v1.1.2-alpha.1] - 25-03-2025
 
 ### Added
