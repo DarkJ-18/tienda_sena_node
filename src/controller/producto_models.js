@@ -32,8 +32,9 @@ exports.consultarPorReferencia = async (req, res) => {
 }
 
 // Crear un producto
+
 exports.createproduct = async (req, res) => {
-    try:
+    try {
         const newproduct = {
             nombre: req.body.nombre,
             precio: req.body.precio,
@@ -44,7 +45,15 @@ exports.createproduct = async (req, res) => {
             categoria: req.body.categoria,
             habilitado: true,
         };
-}
+
+        // Aquí deberías guardar el producto en la base de datos
+        const productoCreado = await modeloProducto.create(newproduct);
+        res.status(201).json({ mensaje: 'Producto creado con éxito', producto: productoCreado });
+    } catch (error) {
+        console.error('Error al crear el producto:', error);
+        res.status(500).json({ error: 'Error al crear el producto' });
+    }
+};
 
 // actualizar producto
 exports.updateProduct = async (req, res) => {
