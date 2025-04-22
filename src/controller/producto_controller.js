@@ -91,3 +91,17 @@ exports.deleteProduct = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+exports.listarProductosUsuario = async (req, res) => {
+    try {
+        const productos = await Producto.find(); // Ajusta según tu lógica
+        res.render('pages/productos/listar_producto_usuario', {
+            titulo: 'Tienda Sena',
+            data: productos,
+            request: req // Si necesitas la sesión en la vista
+        });
+    } catch (error) {
+        res.status(500).send('Error al listar productos');
+    }
+};
