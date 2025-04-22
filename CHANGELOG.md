@@ -2,6 +2,14 @@
 
 ---
 
+## [v1.2.3-alpha.1] - 22-04-2025
+
+### Changed
+
+- Refactorizados los modelos y controladores: se actualizaron los esquemas de productos y usuarios, se implementaron operaciones CRUD y se eliminaron archivos no utilizados.
+
+---
+
 ## [v1.2.2-alpha.1] - 25-03-2025
 
 ### Added

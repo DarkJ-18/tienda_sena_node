@@ -1,36 +1,65 @@
-const mongo = require("../config/connection");
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const schemaProducto = new mongo.Schema({
-    nombre:{
+const productoSchema = new Schema({
+    nombre: {
         type: String,
         required: [true, 'El nombre es obligatorio'],
-        minLength: 3
+        minlength: 1,
+        maxlength: 100
     },
-    precio: {
-        type: Number,
-        required: [true, 'El precio es obligatorio'],
-    },
-    foto: {
+    descripcion: {
         type: String,
-        imagenURL: String     
-    },
-    calificacion: {
-        type: Number,
-        required: [true, 'La calificacion es obligatoria'],
+        required: [true, 'La descripción es obligatoria'],
+        minlength: 1,
+        maxlength: 254
     },
     stock: {
         type: Number,
         required: [true, 'El stock es obligatorio'],
+        min: [0, 'El stock no puede ser negativo.']
     },
-    descripcion:{
-        type: String,
-        required: [true, 'La descripcion es obligatoria'],
-        minLength: 3
+    vendedor: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: [true, 'El vendedor es obligatorio']
     },
     categoria: {
         type: String,
-        required: [true, 'La categoria es obligatoria'],
+        required: [true, 'La categoría es obligatoria'],
+        enum: ['Moda', 'Tecnologia', 'Artesania', 'Accesorios', 'Servicios', 'Otros']
     },
-},{versionKey:false});
+    color: {
+        type: String,
+        enum: ['Ninguno', 'Gris', 'Blanco', 'Negro', 'Amarillo', 'Azul', 'Rojo'],
+        default: 'Ninguno'
+    },
+    en_oferta: {
+        type: Boolean,
+        default: false
+    },
+    precio_original: {
+        type: Number,
+        required: [true, 'El precio original es obligatorio'],
+        min: [0, 'El precio original no puede ser negativo.']
+    },
+    descuento: {
+        type: Number,
+        default: 0,
+        min: [0, 'El descuento no puede ser negativo.']
+    }
+});
 
-const modeloProducto = mongo.model("producto", schemaProducto);
+// Validación de descuento
+productoSchema.pre('save', function(next) {
+    if (this.en_oferta && this.descuento > 0) {
+        this.precio_final = this.precio_original - (this.precio_original * this.descuento / 100);
+    } else {
+        this.precio_final = this.precio_original;
+    }
+    next();
+});
+
+const Producto = mongoose.model('Producto', productoSchema);
+
+module.exports = Producto;
