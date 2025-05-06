@@ -33,16 +33,30 @@
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link contact-button fw-medium text-white iniciar-sesion-btn" href="">Mi Perfil</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link contact-button fw-medium text-white" href="">Regístrate</a>
-                </li>
-                <li class="nav-item iniciar-sesion-btn">
-                    <a class="nav-link contact-button fw-medium text-white" href="">Inicie Sesión</a>
-                </li>
+                <% if (usuario) { %>
+                    <li class="nav-item">
+                        <a class="nav-link contact-button fw-medium text-white iniciar-sesion-btn" href="/perfil">Mi Perfil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link contact-button fw-medium text-white" href="/logout">Cerrar sesión</a>
+                    </li>
+                <% } else { %>
+                    <li class="nav-item">
+                        <a class="nav-link contact-button fw-medium text-white" href="/registrarse">Regístrate</a>
+                    </li>
+                    <li class="nav-item iniciar-sesion-btn">
+                        <a class="nav-link contact-button fw-medium text-white" href="/login">Inicie Sesión</a>
+                    </li>
+                <% } %>
             </ul>
         </div>
     </div>
 </nav>
+<div id="notificaciones">
+    <% if (typeof messages !== 'undefined' && messages.length > 0) { messages.forEach(function(message) { %>
+        <div class="alert alert-<%= message.type && message.type !== 'error' ? message.type : 'danger' %> alert-dismissible fade show" role="alert">
+            <%= message.text %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% }); } %>
+</div>

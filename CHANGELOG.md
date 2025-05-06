@@ -2,6 +2,16 @@
 
 ---
 
+## [v1.2.4-alpha.1] - 06-05-2025
+
+### Added
+
+- Se agregaron rutas de autenticación de usuarios: registro, inicio de sesión y cierre de sesión en `usuarios.js`.
+- Se implementó protección CSRF en los formularios de registro e inicio de sesión.
+- Se añadió el middleware `auth.js` para verificar tokens JWT en rutas protegidas.
+
+---
+
 ## [v1.2.3-alpha.1] - 22-04-2025
 
 ### Changed
