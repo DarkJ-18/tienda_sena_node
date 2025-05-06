@@ -3,16 +3,24 @@ const expressEjsLayouts = require('express-ejs-layouts');
 const productosRoutes = require('./routes/productos');
 const usuariosRoutes = require('./routes/usuarios');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const mongoose = require('./src/config/connection');
 require('dotenv').config();
 
 const app = exp();
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views'); 
 
+
 app.use(session({
-    secret: process.env.SESSION_SECRET, 
-    resave: false,
-    saveUninitialized: false
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({ 
+    mongoUrl: `mongodb+srv://${process.env.USUARIOBD}:${process.env.PASSBD}@adso2846458.cjplz.mongodb.net/${process.env.BD}`,
+    collectionName: 'sessions'
+  }),
+  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 día
 }));
 
 // Middleware para hacer disponible 'usuario' en las vistas EJS
