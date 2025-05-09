@@ -1,107 +1,140 @@
-const Producto = require('../models/producto_models');
+// const Producto = require('../models/producto_models');
+const ProductoData = require('../data/producto_data');
+
 
 // Crear un producto
-exports.createProduct = async (req, res) => {
-    try {
-        const newProduct = {
-            nombre: req.body.nombre,
-            descripcion: req.body.descripcion,
-            stock: req.body.stock,
-            vendedor: req.body.vendedor, // Debe ser un ObjectId válido
-            categoria: req.body.categoria,
-            color: req.body.color,
-            en_oferta: req.body.en_oferta,
-            precio_original: req.body.precio_original,
-            descuento: req.body.descuento
-        };
+// exports.createProduct = async (req, res) => {
+//     try {
+//         const newProduct = {
+//             nombre: req.body.nombre,
+//             descripcion: req.body.descripcion,
+//             stock: req.body.stock,
+//             vendedor: req.body.vendedor, // Debe ser un ObjectId válido
+//             categoria: req.body.categoria,
+//             color: req.body.color,
+//             en_oferta: req.body.en_oferta,
+//             precio_original: req.body.precio_original,
+//             descuento: req.body.descuento
+//         };
 
-        const productoCreado = await Producto.create(newProduct);
-        res.status(201).json({ mensaje: 'Producto creado con éxito', producto: productoCreado });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
+//         const productoCreado = await Producto.create(newProduct);
+//         res.status(201).json({ mensaje: 'Producto creado con éxito', producto: productoCreado });
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
 
 // Obtener todos los productos
-exports.getAllProducts = async (req, res) => {
-    try {
-        const productos = await Producto.find().populate('vendedor');
-        res.status(200).json(productos);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+// exports.getAllProducts = async (req, res) => {
+//     try {
+//         const productos = await Producto.find().populate('vendedor');
+//         res.status(200).json(productos);
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// };
 
 // Obtener un producto por ID
-exports.getProductById = async (req, res) => {
-    try {
-        const producto = await Producto.findById(req.params.id).populate('vendedor');
-        if (!producto) {
-            return res.status(404).json({ mensaje: 'Producto no encontrado' });
-        }
-        res.status(200).json(producto);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+// exports.getProductById = async (req, res) => {
+//     try {
+//         const producto = await Producto.findById(req.params.id).populate('vendedor');
+//         if (!producto) {
+//             return res.status(404).json({ mensaje: 'Producto no encontrado' });
+//         }
+//         res.status(200).json(producto);
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// };
 
 // Actualizar un producto
-exports.updateProduct = async (req, res) => {
-    try {
-        const updateFields = {
-            nombre: req.body.nombre,
-            descripcion: req.body.descripcion,
-            stock: req.body.stock,
-            vendedor: req.body.vendedor,
-            categoria: req.body.categoria,
-            color: req.body.color,
-            en_oferta: req.body.en_oferta,
-            precio_original: req.body.precio_original,
-            descuento: req.body.descuento
-        };
+// exports.updateProduct = async (req, res) => {
+//     try {
+//         const updateFields = {
+//             nombre: req.body.nombre,
+//             descripcion: req.body.descripcion,
+//             stock: req.body.stock,
+//             vendedor: req.body.vendedor,
+//             categoria: req.body.categoria,
+//             color: req.body.color,
+//             en_oferta: req.body.en_oferta,
+//             precio_original: req.body.precio_original,
+//             descuento: req.body.descuento
+//         };
 
-        // Elimina campos undefined para evitar sobreescribir con undefined
-        Object.keys(updateFields).forEach(
-            key => updateFields[key] === undefined && delete updateFields[key]
-        );
+//         // Elimina campos undefined para evitar sobreescribir con undefined
+//         Object.keys(updateFields).forEach(
+//             key => updateFields[key] === undefined && delete updateFields[key]
+//         );
 
-        const productoActualizado = await Producto.findByIdAndUpdate(
-            req.params.id,
-            updateFields,
-            { new: true, runValidators: true }
-        );
-        if (!productoActualizado) {
-            return res.status(404).json({ mensaje: 'Producto no encontrado' });
-        }
-        res.status(200).json({ mensaje: 'Producto actualizado', producto: productoActualizado });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
+//         const productoActualizado = await Producto.findByIdAndUpdate(
+//             req.params.id,
+//             updateFields,
+//             { new: true, runValidators: true }
+//         );
+//         if (!productoActualizado) {
+//             return res.status(404).json({ mensaje: 'Producto no encontrado' });
+//         }
+//         res.status(200).json({ mensaje: 'Producto actualizado', producto: productoActualizado });
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
 
 // Eliminar un producto
-exports.deleteProduct = async (req, res) => {
+// exports.deleteProduct = async (req, res) => {
+//     try {
+//         const productoEliminado = await Producto.findByIdAndDelete(req.params.id);
+//         if (!productoEliminado) {
+//             return res.status(404).json({ mensaje: 'Producto no encontrado' });
+//         }
+//         res.status(200).json({ mensaje: 'Producto eliminado' });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// };
+
+
+// exports.listarProductosUsuario = async (req, res) => {
+//     try {
+//         const productos = await Producto.find(); // Ajusta según tu lógica
+//         res.render('pages/productos/listar_producto_usuario', {
+//             titulo: 'Tienda Sena',
+//             data: productos,
+//             request: req // Si necesitas la sesión en la vista
+//         });
+//     } catch (error) {
+//         res.status(500).send('Error al listar productos');
+//     }
+// };
+
+
+
+exports.addProduct = async (req, res) => {
     try {
-        const productoEliminado = await Producto.findByIdAndDelete(req.params.id);
-        if (!productoEliminado) {
-            return res.status(404).json({ mensaje: 'Producto no encontrado' });
+        // Busca si el producto ya existe
+        const productIsRegistred = await ProductoData.findProduct({ referencia: req.body.referencia });
+        if (productIsRegistred) {
+            // Si existe, aumenta el stock en 1
+            productIsRegistred.stock += 1;
+            await productIsRegistred.save();
+            return res.status(200).json({ message: 'Stock aumentado en 1 para el producto existente' });
         }
-        res.status(200).json({ mensaje: 'Producto eliminado' });
+        // Si no existe, crea el producto
+        const producto = await ProductoData.createProductRecord(req.body);
+        return res.status(200).json({ message: 'Producto creado con exito', producto });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: 'Error al crear o actualizar el producto', detalle: error.message });
     }
 };
 
 
-exports.listarProductosUsuario = async (req, res) => {
+exports.findProduct = async (req, res) => {
     try {
-        const productos = await Producto.find(); // Ajusta según tu lógica
-        res.render('pages/productos/listar_producto_usuario', {
-            titulo: 'Tienda Sena',
-            data: productos,
-            request: req // Si necesitas la sesión en la vista
-        });
-    } catch (error) {
-        res.status(500).send('Error al listar productos');
-    }
+            if (!projection) return await Producto.findOne(filter);
+            else return await Producto.find(filter, projection);
+        } catch (error) {
+            return error;
+        }
 };
+

@@ -36,7 +36,8 @@ const usuarioSchema = new Schema({
         required: true
     },
     imagen_perfil: {
-        type: String // URL de la imagen
+        type: String, // URL de la imagen
+        default: ''
     },
     direccion: {
         type: String,

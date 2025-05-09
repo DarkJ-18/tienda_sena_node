@@ -1,10 +1,10 @@
 const exp = require('express');
 const expressEjsLayouts = require('express-ejs-layouts');
-const productosRoutes = require('./routes/productos');
 const usuariosRoutes = require('./routes/usuarios');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const mongoose = require('./src/config/connection');
+const productosRoutes = require('./routes/producto_router');
+
 require('dotenv').config();
 
 const app = exp();
@@ -43,7 +43,7 @@ app.use('/', usuariosRoutes);
 app.get('/', (req, res) => {
     try {
         const messages = req.session.messages || [];
-        req.session.messages = []; // Limpia los mensajes después de mostrarlos
+        req.session.messages = []; 
         res.render('pages/index', {
             titulo: 'Inicio',
             messages
@@ -53,6 +53,8 @@ app.get('/', (req, res) => {
         res.status(500).send('Error interno del servidor');
     }
 });
+
+
 
 app.listen(process.env.PORT, () => {
     console.log(`Servidor en línea, puerto ${process.env.PORT}`);

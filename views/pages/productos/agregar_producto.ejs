@@ -1,11 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
-</html>
+  <%- include('../../partials/head.ejs') %>
+  <%- include('../../partials/header.ejs') %>
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Agregar Producto</h3>
+          </div>
+          <div class="card-body">
+            <form action="/agregar_producto" method="POST">
+              <div class="mb-3">
+                <label class="form-label">Nombre:</label>
+                <input type="text" class="form-control" name="nombre" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Descripción:</label>
+                <input type="text" class="form-control" name="descripcion" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Stock:</label>
+                <input type="number" class="form-control" name="stock" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Categoría:</label>
+                <input type="text" class="form-control" name="categoria" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Color:</label>
+                <input type="text" class="form-control" name="color">
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" name="en_oferta" value="true" id="en_oferta">
+                <label class="form-check-label" for="en_oferta">En oferta</label>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Precio original:</label>
+                <input type="number" class="form-control" name="precio_original" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Descuento:</label>
+                <input type="number" class="form-control" name="descuento" value="0">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Referencia:</label>
+                <input type="text" class="form-control" name="referencia" required>
+              </div>
+              <button type="submit" class="btn btn-success w-100">Crear Producto</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../../partials/footer.ejs') %>

@@ -2,6 +2,15 @@
 
 ---
 
+## [v1.3.5-alpha.1] - 09-05-2025
+
+### Changed
+
+- Refactorización de la gestión de productos: se reemplazaron las rutas de productos, se actualizaron los métodos del controlador y se mejoró la lógica de adición de productos.
+
+---
+
+
 ## [v1.3.4-alpha.1] - 06-05-2025
 
 ### Added
