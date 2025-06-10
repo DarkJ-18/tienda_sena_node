@@ -48,6 +48,7 @@ exports.registrarUsuario = async (req, res) => {
             password: hashedPassword
         });
 
+        // Guardar el usuario en la base de datos
         await nuevoUsuario.save();
         return res.render('pages/login', {
             csrfToken: req.csrfToken ? req.csrfToken() : '',
@@ -68,6 +69,7 @@ exports.registrarUsuario = async (req, res) => {
 // Iniciar sesión
 exports.iniciarSesion = async (req, res) => {
     try {
+        // Verificar si el usuario ya está autenticado
         const { correo, password } = req.body;
         const usuario = await Usuario.findOne({ correo });
         if (!usuario) {
@@ -76,6 +78,7 @@ exports.iniciarSesion = async (req, res) => {
                 messages: [{ type: 'danger', text: 'Correo o contraseña incorrectos.' }]
             });
         }
+        // Verificar la contraseña
         const esValida = await bcrypt.compare(password, usuario.password);
         if (!esValida) {
             return res.render('pages/login', {
