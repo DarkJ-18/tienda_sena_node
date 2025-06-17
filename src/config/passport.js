@@ -28,7 +28,7 @@ passport.use(new GoogleStrategy({
             user = await Usuario.create({
                 nombre_apellido: profile.displayName,
                 correo: profile.emails[0].value,
-                password: 'google', // Contraseña temporal para usuarios de Google
+                password: 'google_oauth', // Contraseña temporal para usuarios de Google
             });
         }
         return done(null, user);
@@ -51,7 +51,7 @@ passport.use(new FacebookStrategy({
             user = await Usuario.create({
                 nombre_apellido: profile.displayName,
                 correo: email,
-                password: 'facebook', // Contraseña temporal para usuarios de Facebook
+                password: 'facebook_oauth', // Contraseña temporal para usuarios de Facebook
             });
         }
         return done(null, user);
@@ -73,7 +73,7 @@ passport.use(new GitHubStrategy({
             user = await Usuario.create({
                 nombre_apellido: profile.displayName || profile.username,
                 correo: email,
-                password: 'github', // Contraseña temporal para usuarios de GitHub
+                password: 'github_oauth', // Contraseña temporal para usuarios de GitHub
             });
         }
         return done(null, user);

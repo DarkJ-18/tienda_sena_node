@@ -5,6 +5,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const productosRoutes = require('./routes/producto_router');
 const passport = require('passport');
+const apiProductosRoutes = require('./routes/api_productos');
 require('./src/config/passport');
 
 require('dotenv').config();
@@ -43,6 +44,7 @@ app.use('/', productosRoutes);
 app.use('/', usuariosRoutes);
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(apiProductosRoutes);
 
 app.get('/', (req, res) => {
     try {

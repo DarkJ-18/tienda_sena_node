@@ -42,6 +42,19 @@ const productoSchema = new Schema({
         type: Number,
         default: 0,
         min: [0, 'El descuento no puede ser negativo.']
+    },
+    imagenes: [{
+        url: String,
+        descripcion: String
+    }],
+    referencia: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    precio_final: {
+        type: Number,
+        default: 0
     }
 });
 
