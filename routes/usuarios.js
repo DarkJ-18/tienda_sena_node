@@ -47,6 +47,8 @@ router.get('/auth/google/callback',
   }
 );
 
+// Ruta para iniciar login con Facebook
+router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 router.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   (req, res) => {
@@ -60,6 +62,9 @@ router.get('/auth/facebook/callback',
   }
 );
 
+
+// Ruta para iniciar login con GitHub
+router.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
 router.get('/auth/github/callback',
   passport.authenticate('github', { failureRedirect: '/login' }),
   (req, res) => {

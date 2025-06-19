@@ -50,9 +50,34 @@ O en modo producción:
 ```bash
 npm start
 ```
-Accede a la aplicación en [http://localhost:3000](http://localhost:3000) (puerto configurable en `.env`).
+> **IMPORTANTE:**  
+> Si deseas usar el login con Google, debes ejecutar la aplicación en el **puerto 8585**.  
+> Accede a la aplicación en [http://localhost:8585](http://localhost:8585)  
+> El login social solo funcionará correctamente en ese puerto, ya que es el configurado en Google Console como callback:
+> ```
+> http://localhost:8585/auth/google/callback
+> ```
 
 ---
+
+## Login con Google
+
+Para que el inicio de sesión con Google funcione correctamente:
+
+1. Asegúrate de que tu archivo `.env` tenga el puerto:
+   ```
+   PORT=8585
+   ```
+2. En la [Google Cloud Console](https://console.developers.google.com/), la URI de redirección debe ser:
+   ```
+   http://localhost:8585/auth/google/callback
+   ```
+3. Accede a la app desde [http://localhost:8585](http://localhost:8585)
+
+Si usas otro puerto, el login con Google mostrará un error de `redirect_uri_mismatch`.
+
+---
+
 
 ## Estructura del Proyecto
 
