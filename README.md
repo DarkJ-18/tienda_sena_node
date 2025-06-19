@@ -17,9 +17,12 @@ Proyecto de tienda virtual desarrollado con Node.js, Express y EJS, orientado a 
 - [Instalación](#instalación)
 - [Uso](#uso)
 - [Estructura del Proyecto](#estructura-del-proyecto)
+- [Funcionalidades](#funcionalidades)
+- [Dependencias](#dependencias)
 - [Versionado](#versionado)
 - [Convenciones](#convenciones)
 - [Contacto](#contacto)
+
 
 ---
 
@@ -53,48 +56,56 @@ Accede a la aplicación en [http://localhost:3000](http://localhost:3000) (puert
 
 ## Estructura del Proyecto
 
-- `src/`: Código fuente principal (modelos, controladores, middleware, configuración).
-- `routes/`: Definición de rutas de la aplicación.
-- `public/`: Archivos estáticos (imágenes, CSS, JS).
-- `views/`: Vistas EJS (páginas y parciales).
-- `index.js`: Punto de entrada principal.
-- `package.json`: Configuración y dependencias.
-- `.env`: Variables de entorno.
-- `.gitignore`: Archivos y carpetas ignorados por Git.
-- `README.md`: Documentación del proyecto.
+- `src/`: Código fuente principal
+  - `config/`: Configuración de base de datos y Passport
+  - `controller/`: Controladores de usuarios y productos
+  - `data/`: Acceso a datos (DAO)
+  - `middleware/`: Middlewares personalizados (ej. autenticación)
+  - `models/`: Modelos de Mongoose para usuarios y productos
+- `routes/`: Definición de rutas (usuarios, productos, API REST)
+- `public/`: Archivos estáticos (imágenes, CSS, JS)
+- `views/`: Vistas EJS (páginas y parciales)
+- `index.js`: Punto de entrada principal
+- `.env`: Variables de entorno
+- `package.json`: Configuración y dependencias
 
 ---
 
-## Versionado
+## Funcionalidades
 
-### Reglas para la numeración
-
-1. Comienza en `v1.0.0` para la primera versión pública estable.
-2. Incrementa:
-   - **MAJOR**: Cambios incompatibles con versiones anteriores.
-   - **MINOR**: Nuevas funcionalidades compatibles.
-   - **PATCH**: Corrección de errores o mejoras internas.
-3. Usa etiquetas de pre-lanzamiento:
-   - `alpha`: Desarrollo inicial, puede ser inestable. Ejemplo: `1.2.0-alpha.1`.
-   - `beta`: Más estable, pero puede contener errores. Ejemplo: `1.2.0-beta.1`.
-   - `rc`: Candidata a estable. Ejemplo: `1.2.0-rc.1`.
-
+- Registro e inicio de sesión de usuarios (local y con Google, Facebook, GitHub)
+- Gestión de productos (CRUD) con roles de usuario
+- Listado y detalle de productos
+- Panel de administración (estructura base)
+- Protección de rutas y sesiones con JWT y Passport
+- Vistas responsivas con Bootstrap y EJS
+- Notificaciones y mensajes en la interfaz
 
 ---
+
+## Dependencias
+
+- express
+- mongoose
+- ejs
+- express-session
+- connect-mongo
+- passport, passport-google-oauth20, passport-facebook, passport-github2
+- bcrypt, bcryptjs
+- dotenv
+- bootstrap
+
+---
+
 
 ## Convenciones
 
-- **Carpetas**:
-  - `src/`: Código fuente.
-  - `config/`: Configuración.
-  - `public/`: Archivos estáticos.
-
-- **Archivos**:
-  - `index.js`: Entrada principal.
-  - `package.json`: Configuración y dependencias.
-  - `.gitignore`: Exclusiones de Git.
-  - `README.md`: Documentación.
-
+- Código fuente en `src/`
+- Rutas en `routes/`
+- Archivos estáticos en `public/`
+- Vistas en `views/`
+- Variables sensibles en `.env` (no subir a git)
+- Uso de controladores y modelos separados
 
 ---
 

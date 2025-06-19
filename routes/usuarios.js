@@ -42,11 +42,11 @@ router.get('/auth/google/callback',
       nombre_apellido: req.user.nombre_apellido,
       rol: req.user.rol
     };
+    req.session.messages = [{ type: 'success', text: `¡Bienvenido, ${req.user.nombre_apellido}!` }];
     res.redirect('/');
   }
 );
 
-router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 router.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   (req, res) => {
@@ -55,11 +55,11 @@ router.get('/auth/facebook/callback',
       nombre_apellido: req.user.nombre_apellido,
       rol: req.user.rol
     };
+    req.session.messages = [{ type: 'success', text: `¡Bienvenido, ${req.user.nombre_apellido}!` }];
     res.redirect('/');
   }
 );
 
-router.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
 router.get('/auth/github/callback',
   passport.authenticate('github', { failureRedirect: '/login' }),
   (req, res) => {
@@ -68,6 +68,7 @@ router.get('/auth/github/callback',
       nombre_apellido: req.user.nombre_apellido,
       rol: req.user.rol
     };
+    req.session.messages = [{ type: 'success', text: `¡Bienvenido, ${req.user.nombre_apellido}!` }];
     res.redirect('/');
   }
 );
