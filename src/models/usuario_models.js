@@ -46,7 +46,13 @@ const usuarioSchema = new Schema({
     },
     certificado: {
         type: String // URL del certificado
-    }
+    },
+        resetPasswordToken: {
+            type: String
+        },
+        resetPasswordExpires: {
+            type: Date
+        }
 }, { versionKey: false });
 
 const Usuario = mongoose.model("Usuario", usuarioSchema);

@@ -78,4 +78,13 @@ router.get('/auth/github/callback',
   }
 );
 
+
+router.get('/recuperar-password', usuarioController.formRecuperarPassword);
+router.post('/recuperar-password', usuarioController.enviarRecuperarPassword);
+router.get('/reset-password/:token', usuarioController.formResetPassword);
+router.post('/reset-password/:token', usuarioController.resetPassword);
+
+
+
+
 module.exports = router;
