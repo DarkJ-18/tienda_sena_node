@@ -58,13 +58,44 @@ const productoSchema = new Schema({
     }
 });
 
-// Validación de descuento
-productoSchema.pre('save', function(next) {
-    if (this.en_oferta && this.descuento > 0) {
-        this.precio_final = this.precio_original - (this.precio_original * this.descuento / 100);
+function calcularPrecioFinal(doc) {
+    if (doc.en_oferta && doc.descuento > 0) {
+        doc.precio_final = doc.precio_original - (doc.precio_original * doc.descuento / 100);
     } else {
-        this.precio_final = this.precio_original;
+        doc.precio_final = doc.precio_original;
     }
+}
+
+// Validación de descuento - para save()
+productoSchema.pre('save', function(next) {
+    calcularPrecioFinal(this);
+    next();
+});
+
+// Validación de descuento - para findOneAndUpdate()
+productoSchema.pre('findOneAndUpdate', function(next) {
+    const update = this.getUpdate();
+    
+    // Si se están actualizando campos relacionados con el precio
+    if (update.precio_original !== undefined || update.descuento !== undefined || update.en_oferta !== undefined) {
+        // Obtener los valores actuales y los nuevos
+        const precio_original = update.precio_original;
+        const descuento = update.descuento || 0;
+        const en_oferta = update.en_oferta;
+        
+        if (precio_original !== undefined) {
+            // Calcular precio final
+            let precio_final = precio_original;
+            if (en_oferta && descuento > 0) {
+                precio_final = precio_original - (precio_original * descuento / 100);
+            }
+            
+            // Agregar precio_final al update
+            update.precio_final = precio_final;
+            this.setUpdate(update);
+        }
+    }
+    
     next();
 });
 

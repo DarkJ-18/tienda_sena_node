@@ -1,55 +1,355 @@
-  <%- include('../../partials/head.ejs') %>
+<%- include('../../partials/head.ejs') %>
   <%- include('../../partials/header.ejs') %>
   <main class="container py-5">
     <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6">
+      <div class="col-md-10 col-lg-8">
         <div class="card shadow">
           <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">Agregar Producto</h3>
+            <h3 class="mb-0"><i class="bi bi-plus-circle"></i> Agregar Producto</h3>
           </div>
           <div class="card-body">
-            <form action="/agregar_producto" method="POST">
-              <div class="mb-3">
-                <label class="form-label">Nombre:</label>
-                <input type="text" class="form-control" name="nombre" required>
+            <!-- Mostrar mensajes si existen -->
+            <% if (typeof messages !== 'undefined' && messages.length > 0) { %>
+              <% messages.forEach(message => { %>
+                <div class="alert alert-<%= message.type %> alert-dismissible fade show" role="alert">
+                  <%= message.text %>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+              <% }) %>
+            <% } %>
+
+            <form action="/agregar_producto" method="POST" id="productForm" novalidate>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Nombre *:</label>
+                    <input type="text" class="form-control" name="nombre" required maxlength="100" id="nombre">
+                    <div class="invalid-feedback">
+                      El nombre es obligatorio y debe tener máximo 100 caracteres.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Referencia *:</label>
+                    <input type="text" class="form-control" name="referencia" required placeholder="Ej: PROD001" id="referencia">
+                    <div class="invalid-feedback">
+                      La referencia es obligatoria y debe ser única.
+                    </div>
+                  </div>
+                </div>
               </div>
+
               <div class="mb-3">
-                <label class="form-label">Descripción:</label>
-                <input type="text" class="form-control" name="descripcion" required>
+                <label class="form-label">Descripción *:</label>
+                <textarea class="form-control" name="descripcion" required maxlength="254" rows="3" id="descripcion"></textarea>
+                <div class="invalid-feedback">
+                  La descripción es obligatoria y debe tener máximo 254 caracteres.
+                </div>
+                <small class="text-muted">Caracteres restantes: <span id="descripcionCount">254</span></small>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Stock:</label>
-                <input type="number" class="form-control" name="stock" required>
+
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Categoría *:</label>
+                    <select class="form-select" name="categoria" required id="categoria">
+                      <option value="">Seleccione categoría</option>
+                      <option value="Moda">Moda</option>
+                      <option value="Tecnologia">Tecnología</option>
+                      <option value="Artesania">Artesanía</option>
+                      <option value="Accesorios">Accesorios</option>
+                      <option value="Servicios">Servicios</option>
+                      <option value="Otros">Otros</option>
+                    </select>
+                    <div class="invalid-feedback">
+                      Debe seleccionar una categoría.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Color:</label>
+                    <select class="form-select" name="color">
+                      <option value="Ninguno">Ninguno</option>
+                      <option value="Gris">Gris</option>
+                      <option value="Blanco">Blanco</option>
+                      <option value="Negro">Negro</option>
+                      <option value="Amarillo">Amarillo</option>
+                      <option value="Azul">Azul</option>
+                      <option value="Rojo">Rojo</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Stock *:</label>
+                    <input type="number" class="form-control" name="stock" required min="0" id="stock">
+                    <div class="invalid-feedback">
+                      El stock debe ser un número mayor o igual a 0.
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Categoría:</label>
-                <input type="text" class="form-control" name="categoria" required>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Precio original *:</label>
+                    <div class="input-group">
+                      <span class="input-group-text">$</span>
+                      <input type="number" class="form-control" name="precio_original" required min="0" step="0.01" id="precio_original">
+                      <div class="invalid-feedback">
+                        El precio debe ser mayor a 0.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Descuento (%):</label>
+                    <input type="number" class="form-control" name="descuento" value="0" min="0" max="100" id="descuento">
+                    <div class="invalid-feedback">
+                      El descuento debe estar entre 0 y 100.
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Color:</label>
-                <input type="text" class="form-control" name="color">
-              </div>
+
               <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" name="en_oferta" value="true" id="en_oferta">
-                <label class="form-check-label" for="en_oferta">En oferta</label>
+                <label class="form-check-label" for="en_oferta">
+                  <i class="bi bi-tag"></i> Marcar como producto en oferta
+                </label>
               </div>
+
               <div class="mb-3">
-                <label class="form-label">Precio original:</label>
-                <input type="number" class="form-control" name="precio_original" required>
+                <label class="form-label">Imágenes del producto:</label>
+                <div id="imageInputs">
+                  <div class="input-group mb-2">
+                    <input type="text" class="form-control" name="imagenes[0][url]" placeholder="URL de la imagen">
+                    <input type="text" class="form-control" name="imagenes[0][descripcion]" placeholder="Descripción">
+                    <button type="button" class="btn btn-outline-primary" onclick="addImageInput()">
+                      <i class="bi bi-plus"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Descuento:</label>
-                <input type="number" class="form-control" name="descuento" value="0">
+
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="/admin" class="btn btn-secondary me-md-2">
+                  <i class="bi bi-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-success">
+                  <i class="bi bi-save"></i> Crear Producto
+                </button>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Referencia:</label>
-                <input type="text" class="form-control" name="referencia" required>
-              </div>
-              <button type="submit" class="btn btn-success w-100">Crear Producto</button>
             </form>
           </div>
         </div>
       </div>
     </div>
   </main>
+
+  <script>
+    let imageCount = 1;
+    
+    function addImageInput() {
+      const container = document.getElementById('imageInputs');
+      const newInput = document.createElement('div');
+      newInput.className = 'input-group mb-2';
+      newInput.innerHTML = `
+        <input type="text" class="form-control" name="imagenes[${imageCount}][url]" placeholder="URL de la imagen">
+        <input type="text" class="form-control" name="imagenes[${imageCount}][descripcion]" placeholder="Descripción">
+        <button type="button" class="btn btn-outline-danger" onclick="removeImageInput(this)">
+          <i class="bi bi-trash"></i>
+        </button>
+      `;
+      container.appendChild(newInput);
+      imageCount++;
+    }
+    
+    function removeImageInput(button) {
+      button.closest('.input-group').remove();
+    }
+
+    // Validaciones y funcionalidades mejoradas
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('productForm');
+      const precioOriginal = document.querySelector('input[name="precio_original"]');
+      const descuento = document.querySelector('input[name="descuento"]');
+      const enOferta = document.querySelector('input[name="en_oferta"]');
+      const descripcion = document.getElementById('descripcion');
+      const descripcionCount = document.getElementById('descripcionCount');
+      
+      // Contador de caracteres para descripción
+      descripcion.addEventListener('input', function() {
+        const remaining = 254 - this.value.length;
+        descripcionCount.textContent = remaining;
+        descripcionCount.className = remaining < 50 ? 'text-danger' : remaining < 100 ? 'text-warning' : 'text-muted';
+      });
+      
+      // Validación de referencia en tiempo real
+      const referencia = document.getElementById('referencia');
+      let referenciaTimeout;
+      
+      referencia.addEventListener('input', function() {
+        clearTimeout(referenciaTimeout);
+        const value = this.value.trim();
+        
+        if (value.length >= 3) {
+          referenciaTimeout = setTimeout(async () => {
+            await validarReferencia(value, this);
+          }, 500);
+        }
+      });
+      
+      // Validación del formulario
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Validaciones personalizadas
+        let esValido = true;
+        
+        // Validar precio original
+        const precio = parseFloat(precioOriginal.value);
+        if (precio <= 0) {
+          precioOriginal.setCustomValidity('El precio debe ser mayor a 0');
+          esValido = false;
+        } else {
+          precioOriginal.setCustomValidity('');
+        }
+        
+        // Validar descuento
+        const desc = parseFloat(descuento.value);
+        if (desc < 0 || desc > 100) {
+          descuento.setCustomValidity('El descuento debe estar entre 0 y 100');
+          esValido = false;
+        } else {
+          descuento.setCustomValidity('');
+        }
+        
+        // Validar stock
+        const stock = document.getElementById('stock');
+        const stockValue = parseInt(stock.value);
+        if (stockValue < 0) {
+          stock.setCustomValidity('El stock no puede ser negativo');
+          esValido = false;
+        } else {
+          stock.setCustomValidity('');
+        }
+        
+        // Validar URLs de imágenes
+        const imageUrls = document.querySelectorAll('input[name*="[url]"]');
+        imageUrls.forEach(input => {
+          if (input.value && !isValidUrl(input.value)) {
+            input.setCustomValidity('Debe ser una URL válida');
+            esValido = false;
+          } else {
+            input.setCustomValidity('');
+          }
+        });
+        
+        if (form.checkValidity() && esValido) {
+          // Mostrar spinner de carga
+          const submitBtn = form.querySelector('button[type="submit"]');
+          const originalText = submitBtn.innerHTML;
+          submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creando...';
+          submitBtn.disabled = true;
+          
+          // Enviar formulario
+          form.submit();
+        } else {
+          form.classList.add('was-validated');
+        }
+      });
+      
+      // Calcular precio final automáticamente
+      function calcularPrecioFinal() {
+        const precio = parseFloat(precioOriginal.value) || 0;
+        const desc = parseFloat(descuento.value) || 0;
+        const oferta = enOferta.checked;
+        
+        let precioFinal = precio;
+        if (oferta && desc > 0) {
+          precioFinal = precio - (precio * desc / 100);
+        }
+        
+        // Mostrar precio final calculado
+        let precioFinalElement = document.getElementById('precio-final-preview');
+        if (!precioFinalElement) {
+          precioFinalElement = document.createElement('small');
+          precioFinalElement.id = 'precio-final-preview';
+          precioFinalElement.className = 'text-muted mt-2 d-block';
+          descuento.parentNode.parentNode.appendChild(precioFinalElement);
+        }
+        
+        if (precio > 0) {
+          const ahorro = precio - precioFinal;
+          precioFinalElement.innerHTML = `
+            <strong>Precio final: $${precioFinal.toLocaleString()}</strong>
+            ${ahorro > 0 ? `<br><small class="text-success">Ahorro: $${ahorro.toLocaleString()}</small>` : ''}
+          `;
+        } else {
+          precioFinalElement.textContent = '';
+        }
+      }
+      
+      precioOriginal.addEventListener('input', calcularPrecioFinal);
+      descuento.addEventListener('input', calcularPrecioFinal);
+      enOferta.addEventListener('change', calcularPrecioFinal);
+      
+      // Mostrar/ocultar campo de descuento según oferta
+      enOferta.addEventListener('change', function() {
+        const descuentoGroup = descuento.closest('.mb-3');
+        if (this.checked) {
+          descuentoGroup.style.display = 'block';
+          descuento.setAttribute('required', 'required');
+        } else {
+          descuento.value = 0;
+          descuento.removeAttribute('required');
+          calcularPrecioFinal();
+        }
+      });
+    });
+    
+    function isValidUrl(string) {
+      try {
+        const url = new URL(string);
+        return url.protocol === 'http:' || url.protocol === 'https:';
+      } catch (_) {
+        return false;
+      }
+    }
+    
+    async function validarReferencia(referencia, input) {
+      try {
+        const response = await fetch(`/api/productos/buscar?q=${encodeURIComponent(referencia)}`);
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+          const existe = data.data.some(producto => 
+            producto.referencia.toLowerCase() === referencia.toLowerCase()
+          );
+          
+          if (existe) {
+            input.setCustomValidity('Esta referencia ya existe');
+            input.classList.add('is-invalid');
+          } else {
+            input.setCustomValidity('');
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+          }
+        } else {
+          input.setCustomValidity('');
+          input.classList.remove('is-invalid');
+          input.classList.add('is-valid');
+        }
+      } catch (error) {
+        console.error('Error al validar referencia:', error);
+      }
+    }
+  </script>
+
   <%- include('../../partials/footer.ejs') %>

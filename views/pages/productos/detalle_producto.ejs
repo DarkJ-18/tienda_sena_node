@@ -1,11 +1,315 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+<%- include('../../partials/head.ejs') %>
+<%- include('../../partials/header.ejs') %>
+
+<main class="container py-5">
+  <div class="row">
+    <!-- Galería de imágenes -->
+    <div class="col-md-6">
+      <div class="product-gallery">
+        <div class="main-image mb-3">
+          <img id="mainProductImage" src="" alt="" class="img-fluid rounded shadow" style="width: 100%; height: 400px; object-fit: cover;">
+        </div>
+        <div class="thumbnail-images" id="thumbnailContainer">
+          <!-- Las miniaturas se cargarán aquí -->
+        </div>
+      </div>
+    </div>
     
-</body>
-</html>
+    <!-- Información del producto -->
+    <div class="col-md-6">
+      <div class="product-info">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="/listar_producto_usuario">Productos</a></li>
+            <li class="breadcrumb-item active" id="productBreadcrumb">Producto</li>
+          </ol>
+        </nav>
+        
+        <h1 id="productName" class="h2 mb-3"></h1>
+        <p id="productDescription" class="text-muted mb-4"></p>
+        
+        <!-- Categoría y color -->
+        <div class="product-tags mb-3">
+          <span class="badge bg-primary me-2" id="productCategory"></span>
+          <span class="badge bg-secondary" id="productColor"></span>
+        </div>
+        
+        <!-- Precio -->
+        <div class="price-section mb-4">
+          <div id="originalPrice" class="text-muted text-decoration-line-through" style="display: none;"></div>
+          <div id="finalPrice" class="h3 text-success fw-bold"></div>
+          <div id="discountBadge" class="badge bg-danger" style="display: none;"></div>
+        </div>
+        
+        <!-- Stock -->
+        <div class="stock-info mb-4">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-box me-2"></i>
+            <span>Stock disponible: <strong id="productStock"></strong></span>
+          </div>
+        </div>
+        
+        <!-- Referencia -->
+        <div class="product-reference mb-4">
+          <small class="text-muted">Referencia: <span id="productReference"></span></small>
+        </div>
+        
+        <!-- Cantidad y botones -->
+        <div class="purchase-section">
+          <div class="row align-items-center mb-3">
+            <div class="col-auto">
+              <label for="quantity" class="form-label">Cantidad:</label>
+            </div>
+            <div class="col-auto">
+              <div class="input-group" style="width: 120px;">
+                <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(-1)">-</button>
+                <input type="number" class="form-control text-center" id="quantity" value="1" min="1">
+                <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(1)">+</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary btn-lg" id="addToCartBtn" onclick="addToCart()">
+              <i class="bi bi-cart-plus"></i> Agregar al carrito
+            </button>
+            <button class="btn btn-success btn-lg" id="buyNowBtn" onclick="buyNow()">
+              <i class="bi bi-lightning"></i> Comprar ahora
+            </button>
+          </div>
+        </div>
+        
+        <!-- Información adicional -->
+        <div class="additional-info mt-4">
+          <div class="row">
+            <div class="col-6">
+              <div class="text-center p-3 border rounded">
+                <i class="bi bi-truck h4 text-primary"></i>
+                <small class="d-block">Envío gratis</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="text-center p-3 border rounded">
+                <i class="bi bi-shield-check h4 text-success"></i>
+                <small class="d-block">Compra segura</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Productos relacionados -->
+  <section class="mt-5">
+    <h3 class="mb-4">Productos relacionados</h3>
+    <div class="row" id="relatedProducts">
+      <!-- Los productos relacionados se cargarán aquí -->
+    </div>
+  </section>
+</main>
+
+<script>
+let currentProduct = null;
+let maxQuantity = 1;
+
+document.addEventListener('DOMContentLoaded', function() {
+  const productId = window.location.pathname.split('/').pop();
+  loadProductDetail(productId);
+});
+
+async function loadProductDetail(productId) {
+  try {
+    const response = await fetch(`/api/productos/${productId}`);
+    const data = await response.json();
+    
+    if (data.success) {
+      currentProduct = data.data;
+      displayProductDetail(currentProduct);
+      loadRelatedProducts(currentProduct.categoria, productId);
+    } else {
+      showError('Producto no encontrado');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showError('Error al cargar el producto');
+  }
+}
+
+function displayProductDetail(product) {
+  // Información básica
+  document.getElementById('productName').textContent = product.nombre;
+  document.getElementById('productDescription').textContent = product.descripcion;
+  document.getElementById('productCategory').textContent = product.categoria;
+  document.getElementById('productColor').textContent = product.color;
+  document.getElementById('productStock').textContent = product.stock;
+  document.getElementById('productReference').textContent = product.referencia;
+  document.getElementById('productBreadcrumb').textContent = product.nombre;
+  
+  // Precios
+  const precioFinal = product.precio_final || product.precio_original;
+  const tieneOferta = product.en_oferta && product.descuento > 0;
+  
+  document.getElementById('finalPrice').textContent = `$${precioFinal.toLocaleString()}`;
+  
+  if (tieneOferta) {
+    document.getElementById('originalPrice').textContent = `$${product.precio_original.toLocaleString()}`;
+    document.getElementById('originalPrice').style.display = 'block';
+    document.getElementById('discountBadge').textContent = `-${product.descuento}%`;
+    document.getElementById('discountBadge').style.display = 'inline-block';
+  }
+  
+  // Imágenes
+  displayProductImages(product.imagenes);
+  
+  // Stock y botones
+  maxQuantity = product.stock;
+  document.getElementById('quantity').max = maxQuantity;
+  
+  if (product.stock === 0) {
+    document.getElementById('addToCartBtn').disabled = true;
+    document.getElementById('buyNowBtn').disabled = true;
+    document.getElementById('addToCartBtn').innerHTML = '<i class="bi bi-x-circle"></i> Sin stock';
+  }
+}
+
+function displayProductImages(imagenes) {
+  const mainImage = document.getElementById('mainProductImage');
+  const thumbnailContainer = document.getElementById('thumbnailContainer');
+  
+  if (imagenes && imagenes.length > 0) {
+    // Imagen principal
+    mainImage.src = imagenes[0].url;
+    mainImage.alt = imagenes[0].descripcion || 'Imagen del producto';
+    
+    // Miniaturas
+    if (imagenes.length > 1) {
+      thumbnailContainer.innerHTML = imagenes.map((img, index) => `
+        <img src="${img.url}" alt="${img.descripcion || 'Imagen ' + (index + 1)}" 
+             class="thumbnail-img me-2 mb-2" 
+             onclick="changeMainImage('${img.url}', '${img.descripcion || 'Imagen del producto'}')"
+             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer; border: 2px solid transparent;">
+      `).join('');
+    }
+  } else {
+    // Imagen por defecto
+    mainImage.src = '/static/assets/img_principal.jpg';
+    mainImage.alt = 'Imagen no disponible';
+  }
+}
+
+function changeMainImage(src, alt) {
+  document.getElementById('mainProductImage').src = src;
+  document.getElementById('mainProductImage').alt = alt;
+  
+  // Actualizar borde de miniatura activa
+  document.querySelectorAll('.thumbnail-img').forEach(img => {
+    img.style.border = '2px solid transparent';
+  });
+  event.target.style.border = '2px solid #0d6efd';
+}
+
+function changeQuantity(change) {
+  const quantityInput = document.getElementById('quantity');
+  let newValue = parseInt(quantityInput.value) + change;
+  
+  if (newValue >= 1 && newValue <= maxQuantity) {
+    quantityInput.value = newValue;
+  }
+}
+
+async function loadRelatedProducts(categoria, excludeId) {
+  try {
+    const response = await fetch(`/api/productos/categoria/${categoria}?limit=4`);
+    const data = await response.json();
+    
+    if (data.success) {
+      const relatedProducts = data.data.filter(p => p._id !== excludeId);
+      displayRelatedProducts(relatedProducts.slice(0, 4));
+    }
+  } catch (error) {
+    console.error('Error al cargar productos relacionados:', error);
+  }
+}
+
+function displayRelatedProducts(products) {
+  const container = document.getElementById('relatedProducts');
+  
+  if (products.length === 0) {
+    container.innerHTML = '<p class="text-muted">No hay productos relacionados</p>';
+    return;
+  }
+  
+  container.innerHTML = products.map(product => {
+    const precioFinal = product.precio_final || product.precio_original;
+    const imagenPrincipal = product.imagenes && product.imagenes.length > 0 
+      ? product.imagenes[0].url 
+      : '/static/assets/img_principal.jpg';
+    
+    return `
+      <div class="col-md-3 mb-3">
+        <div class="card h-100 shadow-sm">
+          <img src="${imagenPrincipal}" class="card-img-top" alt="${product.nombre}" 
+               style="height: 150px; object-fit: cover;">
+          <div class="card-body">
+            <h6 class="card-title text-truncate">${product.nombre}</h6>
+            <p class="text-success fw-bold">$${precioFinal.toLocaleString()}</p>
+            <a href="/producto/${product._id}" class="btn btn-outline-primary btn-sm">Ver producto</a>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function addToCart() {
+  const quantity = parseInt(document.getElementById('quantity').value);
+  // Implementar lógica de carrito
+  alert(`Agregado al carrito: ${quantity} x ${currentProduct.nombre}`);
+}
+
+function buyNow() {
+  const quantity = parseInt(document.getElementById('quantity').value);
+  // Implementar lógica de compra directa
+  alert(`Compra directa: ${quantity} x ${currentProduct.nombre}`);
+}
+
+function showError(message) {
+  document.querySelector('main').innerHTML = `
+    <div class="container py-5 text-center">
+      <div class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle h1"></i>
+        <h4>${message}</h4>
+        <a href="/listar_producto_usuario" class="btn btn-primary mt-3">Volver a productos</a>
+      </div>
+    </div>
+  `;
+}
+</script>
+
+<style>
+.thumbnail-img:hover {
+  border: 2px solid #0d6efd !important;
+}
+
+.product-gallery .main-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.product-info {
+  padding-left: 2rem;
+}
+
+@media (max-width: 768px) {
+  .product-info {
+    padding-left: 0;
+    margin-top: 2rem;
+  }
+}
+</style>
+
+<%- include('../../partials/footer.ejs') %>

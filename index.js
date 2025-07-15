@@ -1,11 +1,12 @@
 const exp = require('express');
 const expressEjsLayouts = require('express-ejs-layouts');
-const usuariosRoutes = require('./routes/usuarios');
+const usuarioRoutes = require('./routes/usuario_router');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const productosRoutes = require('./routes/producto_router');
+const productoRoutes = require('./routes/producto_router');
+const adminRoutes = require('./routes/admin_router');
 const passport = require('passport');
-const apiProductosRoutes = require('./routes/api_productos');
+const apiProductoRoutes = require('./routes/api_producto');
 require('./src/config/passport');
 
 require('dotenv').config();
@@ -40,11 +41,12 @@ app.set('layout', 'pages/bases/base');
 app.use('/css', exp.static(__dirname + '/node_modules/bootstrap/dist/css'));
 app.use('/js', exp.static(__dirname + '/node_modules/bootstrap/dist/js'));
 app.use('/static', exp.static(__dirname + '/public'));
-app.use('/', productosRoutes);
-app.use('/', usuariosRoutes);
+app.use('/', productoRoutes);
+app.use('/', usuarioRoutes);
+app.use('/', adminRoutes);
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(apiProductosRoutes);
+app.use(apiProductoRoutes);
 
 app.get('/', (req, res) => {
     try {

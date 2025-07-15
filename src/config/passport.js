@@ -2,7 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const GitHubStrategy = require('passport-github2').Strategy;
-const Usuario = require('../models/usuario_models');
+const Usuario = require('../models/usuario_model');
 
 // Serialización y deserialización de usuario para la sesión
 // Esto permite que Passport guarde el ID del usuario en la sesión y lo recupere en cada solicitud

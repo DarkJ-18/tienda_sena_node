@@ -1,5 +1,5 @@
-// const Producto = require('../models/producto_models');
-const ProductoData = require('../data/producto_data');
+// const Producto = require('../models/producto_model');
+const productoData = require('../data/producto_data');
 
 
 // Crear un producto
@@ -113,18 +113,45 @@ const ProductoData = require('../data/producto_data');
 exports.addProduct = async (req, res) => {
     try {
         // Busca si el producto ya existe
-        const productIsRegistred = await ProductoData.findProduct({ referencia: req.body.referencia });
+        const productIsRegistred = await productoData.findProduct({ referencia: req.body.referencia });
         if (productIsRegistred) {
             // Si existe, aumenta el stock en 1
             productIsRegistred.stock += 1;
             await productIsRegistred.save();
-            return res.status(200).json({ message: 'Stock aumentado en 1 para el producto existente' });
+            
+            // Redirigir con mensaje de éxito
+            req.session.messages = [{ type: 'info', text: 'Stock aumentado en 1 para el producto existente' }];
+            return res.redirect('/agregar_producto');
         }
+        
         // Si no existe, crea el producto
-        const producto = await ProductoData.createProductRecord(req.body);
-        return res.status(200).json({ message: 'Producto creado con exito', producto });
+        const producto = await productoData.createProductRecord(req.body);
+        
+        // Redirigir con mensaje de éxito
+        req.session.messages = [{ type: 'success', text: 'Producto creado con éxito' }];
+        return res.redirect('/agregar_producto');
+        
     } catch (error) {
-        return res.status(500).json({ error: 'Error al crear o actualizar el producto', detalle: error.message });
+        console.error('Error al crear producto:', error);
+        
+        // Redirigir con mensaje de error
+        req.session.messages = [{ type: 'danger', text: 'Error al crear el producto: ' + error.message }];
+        return res.redirect('/agregar_producto');
+    }
+};
+
+exports.mostrarFormularioAgregar = async (req, res) => {
+    try {
+        const messages = req.session.messages || [];
+        req.session.messages = []; // Limpiar mensajes después de mostrarlos
+        
+        res.render('pages/productos/agregar_producto', {
+            titulo: 'Agregar Producto',
+            messages: messages
+        });
+    } catch (error) {
+        console.error('Error al mostrar formulario:', error);
+        res.status(500).send('Error interno del servidor');
     }
 };
 

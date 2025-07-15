@@ -1,11 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+<%- include('../../../partials/head.ejs') %>
+<%- include('../../../partials/header.ejs') %>
+
+<main class="container py-5">
+  <div class="row">
+    <div class="col-md-2">
+      <!-- Sidebar -->
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h6 class="mb-0"><i class="bi bi-speedometer2"></i> Panel Admin</h6>
+        </div>
+        <div class="list-group list-group-flush">
+          <a href="/admin/productos" class="list-group-item list-group-item-action">
+            <i class="bi bi-box"></i> Productos
+          </a>
+          <a href="/admin/usuarios" class="list-group-item list-group-item-action">
+            <i class="bi bi-people"></i> Usuarios
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="mb-0"><i class="bi bi-eye"></i> Detalle del Producto</h4>
+          <a href="/admin/productos" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al listado
+          </a>
+        </div>
+        <div class="card-body" id="productDetail">
+          <!-- El contenido se cargará aquí -->
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// Obtener ID del producto de la URL
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get('id');
+
+if (productId) {
+  loadProductDetail(productId);
+} else {
+  showError('ID de producto no válido');
+}
+
+async function loadProductDetail(id) {
+  try {
+    const response = await fetch(`/api/productos/${id}`);
+    const data = await response.json();
     
-</body>
-</html>
+    if (data.success) {
+      displayProductDetail(data.data);
+    } else {
+      showError(data.message || 'Producto no encontrado');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showError('Error al cargar el producto');
+  }
+}
+
+function displayProductDetail(product) {
+  const container = document.getElementById('productDetail');
+  
+  const imagenes = product.imagenes && product.imagenes.length > 0 
+    ? product.imagenes.map(img => 
+        `<img src="${img.url}" alt="${img.descripcion || product.nombre}" class="img-thumbnail me-2 mb-2" style="max-width: 150px;">`
+      ).join('')
+    : '<img src="/static/assets/img_principal.jpg" alt="Sin imagen" class="img-thumbnail" style="max-width: 150px;">';
+  
+  const precioFinal = product.precio_final || product.precio_original;
+  
+  container.innerHTML = `
+    <div class="row">
+      <div class="col-md-6">
+        <h5>Imágenes del Producto</h5>
+        <div class="mb-3">
+          ${imagenes}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <table class="table table-striped">
+          <tr><th>Referencia:</th><td>${product.referencia}</td></tr>
+          <tr><th>Nombre:</th><td>${product.nombre}</td></tr>
+          <tr><th>Categoría:</th><td><span class="badge bg-primary">${product.categoria}</span></td></tr>
+          <tr><th>Color:</th><td>${product.color}</td></tr>
+          <tr><th>Stock:</th><td>
+            <span class="badge ${product.stock === 0 ? 'bg-danger' : product.stock < 10 ? 'bg-warning' : 'bg-success'}">
+              ${product.stock} unidades
+            </span>
+          </td></tr>
+          <tr><th>Precio Original:</th><td>$${product.precio_original.toLocaleString()}</td></tr>
+          <tr><th>Descuento:</th><td>${product.descuento}%</td></tr>
+          <tr><th>Precio Final:</th><td><strong class="text-success">$${precioFinal.toLocaleString()}</strong></td></tr>
+          <tr><th>En Oferta:</th><td>
+            ${product.en_oferta ? '<span class="badge bg-danger">Sí</span>' : '<span class="badge bg-secondary">No</span>'}
+          </td></tr>
+          <tr><th>Fecha de Creación:</th><td>${new Date(product.createdAt || Date.now()).toLocaleDateString()}</td></tr>
+        </table>
+        
+        <div class="mt-4">
+          <h5>Descripción</h5>
+          <p class="text-muted">${product.descripcion}</p>
+        </div>
+        
+        <div class="mt-4">
+          <a href="/admin/productos" class="btn btn-primary me-2">
+            <i class="bi bi-pencil"></i> Editar Producto
+          </a>
+          <button class="btn btn-danger" onclick="confirmarEliminacion('${product._id}', '${product.nombre}')">
+            <i class="bi bi-trash"></i> Eliminar Producto
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function showError(message) {
+  const container = document.getElementById('productDetail');
+  container.innerHTML = `
+    <div class="alert alert-danger text-center" role="alert">
+      <i class="bi bi-exclamation-triangle h1"></i>
+      <h4>${message}</h4>
+      <a href="/admin/productos" class="btn btn-primary mt-3">Volver al listado</a>
+    </div>
+  `;
+}
+
+async function confirmarEliminacion(id, nombre) {
+  if (confirm(`¿Estás seguro de que deseas eliminar el producto "${nombre}"? Esta acción no se puede deshacer.`)) {
+    try {
+      const response = await fetch(`/api/productos/${id}`, {
+        method: 'DELETE'
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert('Producto eliminado exitosamente');
+        window.location.href = '/admin/productos';
+      } else {
+        alert('Error: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+      alert('Error al eliminar el producto');
+    }
+  }
+}
+</script>
+
+<%- include('../../../partials/footer.ejs') %>
