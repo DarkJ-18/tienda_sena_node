@@ -69,7 +69,13 @@ Inicia la aplicación en modo desarrollo:
 ```bash
 npm run dev
 ```
-O en modo producción:
+
+Para producción local con PM2:
+```bash
+npm run prod
+```
+
+Para producción en plataformas como Render, Heroku, etc.:
 ```bash
 npm start
 ```
@@ -197,8 +203,9 @@ Para acceder como administrador a la aplicación:
 - **nodemon**: Reinicio automático del servidor en desarrollo
 
 ### Scripts Disponibles
-- `npm start`: Inicia la aplicación con PM2 (producción)
+- `npm start`: Inicia la aplicación con Node.js (producción en la nube)
 - `npm run dev`: Inicia la aplicación con Nodemon (desarrollo)
+- `npm run prod`: Inicia la aplicación con PM2 (producción local)
 - `npm test`: Ejecuta las pruebas (actualmente no configurado)
 
 ---
